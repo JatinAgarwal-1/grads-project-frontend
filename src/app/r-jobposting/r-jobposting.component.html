@@ -1,0 +1,484 @@
+<app-r-header></app-r-header>
+
+<!--Job Posting-->
+<div class="container" id="mycontainer">
+  <div>
+    <div class="dropdown">
+      <button
+        type="button"
+        class="dropdown-toggle"
+        data-toggle="dropdown"
+        style="
+          padding: 10px;
+          position: absolute;
+          left: 0;
+          right: 0;
+          margin-left: auto;
+          margin-right: auto;
+          width: 250px;
+        "
+      >
+        <a>ADD JOB</a>
+      </button>
+      <ul class="dropdown-menu">
+        <li style="text-align: center; width: 250px">
+          <a class="dropdown-item tooltips" (click)="onOpenModal('add')"
+            >FORM</a
+          >
+        </li>
+        <li style="text-align: center; width: 250px">
+          <a class="dropdown-item tooltips" (click)="onOpenModal('csv')">CSV</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <br /><br /><br />
+  <div
+    style="
+      padding: 20px;
+      position: absolute;
+      left: 0;
+      right: 0;
+      margin-left: auto;
+      margin-right: auto;
+      width: 300px;
+      height: auto;
+    "
+  >
+    <form class="my-2 my-lg-0">
+      <input
+        type="search"
+        (ngModelChange)="searchJobs(key.value)"
+        #key="ngModel"
+        ngModel
+        name="key"
+        id="searchName"
+        class="form-control mr-sm-2"
+        placeholder="Search jobs.."
+        style="text-align: center"
+        required
+      />
+    </form>
+  </div>
+  <br /><br /><br /><br />
+  <div class="row">
+    <div *ngFor="let job of jobs" class="col-md-12 col-xl-3">
+      <div class="card m-b-30">
+        <div class="card-body" style="text-align: center">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <b>{{ job?.title }}</b>
+            </li>
+          </ul>
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><b>Location:</b> {{ job?.location }}</li>
+          <li class="list-group-item">
+            <b>Experience:</b> {{ job?.experience }}
+          </li>
+          <li class="list-group-item">
+            <b>Requirements:</b> {{ job?.requirements }}
+          </li>
+          <li class="list-group-item">
+            <b>Description:</b> {{ job?.description }}
+          </li>
+          <li class="list-group-item"><b>Posted By:</b> {{ job?.email }}</li>
+        </ul>
+        <div class="card-body" style="text-align: center">
+          <div class="btn-group btn-group-sm" *ngIf="job.referral == false">
+            <a
+              (click)="onOpenModal('edit', job)"
+              class="btn btn-primary tooltips"
+              data-placement="top"
+              data-original-title="Edit"
+              id="job_edit"
+              ><i class="fa fa-pencil"></i
+            ></a>
+            <a
+              (click)="onOpenModal('delete', job)"
+              class="btn btn-secondary tooltips"
+              data-placement="top"
+              data-original-title="Delete"
+              id="job_del"
+              ><i class="fa fa-times"></i
+            ></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Add Job Modal-->
+<div
+  class="modal fade"
+  id="addJobModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="addJobModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addJobModalLabel">Add A Job</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form #addForm="ngForm" (ngSubmit)="onAddJob(addForm)">
+          <div class="form-group">
+            <label for="title">Job Name</label>
+            <input
+              type="text"
+              ngModel
+              name="title"
+              class="form-control"
+              id="title"
+              placeholder="Job Name"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="jobid">Job ID</label>
+            <input
+              type="number"
+              ngModel
+              name="jobid"
+              class="form-control"
+              id="jobid"
+              placeholder="Job ID"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="description">Description</label>
+            <input
+              type="text"
+              ngModel
+              name="description"
+              class="form-control"
+              id="description"
+              placeholder="Description"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="location">Location</label>
+            <input
+              type="text"
+              ngModel
+              name="location"
+              class="form-control"
+              id="location"
+              placeholder="Location"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="experience">Experience</label>
+            <input
+              type="text"
+              ngModel
+              name="experience"
+              class="form-control"
+              id="experience"
+              placeholder="Experience"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="requirements">Requirements</label>
+            <input
+              type="text"
+              ngModel
+              name="requirements"
+              class="form-control"
+              id="requirements"
+              placeholder="Requirements"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              ngModel
+              name="email"
+              class="form-control"
+              id="email"
+              placeholder="Email"
+              required
+            />
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              id="add-job-form"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              [disabled]="addForm.invalid"
+              type="submit"
+              class="btn btn-primary"
+            >
+              ADD JOB
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<br /><br />
+
+<!--CSV Modal-->
+<div
+  class="modal fade"
+  id="addCSVModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="addCSVModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addCSVrModalLabel">Add Jobs</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form #csvForm="ngForm">
+          <div class="form-group">
+            <label for="csv">CSV File</label>
+            <!-- <input
+            
+              type="file"
+              ngModel
+              name="csv"
+              class="form-control"
+              id="csv"
+              placeholder="CSV File"
+              required
+               
+            /> -->
+            <input
+              class="form-control"
+              type="file"
+              (change)="onChange($event)"
+            />
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              id="add-product-form"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              [disabled]="csvForm.invalid"
+              type="submit"
+              class="btn btn-primary"
+              (click)="onUpload()"
+            >
+              ADD
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Edit Job Modal-->
+<div
+  class="modal fade"
+  id="updateJobModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="JobEditModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="updateJobModalLabel">Update A Job</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form #editForm="ngForm">
+          <div class="form-group">
+            <label for="title">Job Name</label>
+            <input
+              type="text"
+              ngModel="{{ editJob?.title }}"
+              name="title"
+              class="form-control"
+              id="title"
+              placeholder="Job Name"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="jobid">Job ID</label>
+            <input
+              type="number"
+              ngModel="{{ editJob?.jobid }}"
+              name="jobid"
+              class="form-control"
+              id="jobid"
+              placeholder="Job ID"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="description">Description</label>
+            <input
+              type="text"
+              ngModel="{{ editJob?.description }}"
+              name="description"
+              class="form-control"
+              id="description"
+              placeholder="Description"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="location">Location</label>
+            <input
+              type="text"
+              ngModel="{{ editJob?.location }}"
+              name="location"
+              class="form-control"
+              id="location"
+              placeholder="Location"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="experience">Experience</label>
+            <input
+              type="text"
+              ngModel="{{ editJob?.experience }}"
+              name="experience"
+              class="form-control"
+              id="experience"
+              placeholder="Experience"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="requirements">Requirements</label>
+            <input
+              type="text"
+              ngModel="{{ editJob?.requirements }}"
+              name="requirements"
+              class="form-control"
+              id="requirements"
+              placeholder="Requirements"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              ngModel="{{ editJob?.email }}"
+              name="email"
+              class="form-control"
+              id="email"
+              placeholder="Email"
+              required
+            />
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              id=""
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              (click)="onUpdateJob(editForm.value)"
+              data-dismiss="modal"
+              class="btn btn-primary"
+            >
+              UPDATE JOB
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<br /><br />
+
+<!--Delete Job Modal-->
+<div
+  class="modal fade"
+  id="deleteJobModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="deleteModelLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModelLabel">Delete A Job</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete?</p>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            No
+          </button>
+          <button
+            (click)="onDeleteJob(deleteJob?.jobid!)"
+            class="btn btn-danger"
+            data-dismiss="modal"
+          >
+            Yes
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
